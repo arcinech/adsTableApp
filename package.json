@@ -11,11 +11,15 @@
   "author": "arcinech",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
+    "connect-mongo": "^4.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "express-session": "^1.17.3",
+    "mongo-sanitize": "^1.1.0",
     "mongoose": "^6.5.2",
-    "passport": "^0.6.0"
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"
