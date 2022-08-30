@@ -73,3 +73,11 @@ exports.logout = (req, res) => {
   req.session.destroy();
   res.status(200).send({ message: 'User logged out' });
 };
+
+exports.getUser = (req, res) => {
+  if (req.session.login) {
+    res.status(200).send({ login: req.session.login });
+  } else {
+    res.status(401).send({ message: 'Unauthorized' });
+  }
+};
