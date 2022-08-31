@@ -1,4 +1,4 @@
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   if (req.session.login) {
     next();
   } else {

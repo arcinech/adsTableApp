@@ -6,7 +6,7 @@ const cleanFile = require('../utils/cleanFiles');
 
 exports.getAll = async (req, res) => {
   try {
-    const ads = await Ad.find();
+    const ads = await Ad.find()?.populate('user', '-password -__v');
     res.status(200).json(ads);
   } catch (err) {
     res.status(500).json(err);
@@ -15,7 +15,11 @@ exports.getAll = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const ad = await Ad.findById(sanitize(req.params.id));
+    const ad = await Ad.findById(sanitize(req.params.id))?.populate(
+      'user',
+      '-password -_v',
+    );
+
     res.status(200).json(ad);
   } catch (err) {
     res.status(500).json({ message: err.message });

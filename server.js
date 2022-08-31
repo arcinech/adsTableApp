@@ -1,4 +1,4 @@
-require('dotenv');
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -17,31 +17,39 @@ app.listen(process.env.PORT || 8000, () => {
 connectToDB();
 
 // add middleware
-app.use(cors());
+if (process.env.NODE_ENV !== 'production') {
+  app.use(
+    cors({
+      origin: ['http://localhost:3000', 'http://localhost:8000'],
+      credentials: true,
+    }),
+  );
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-console.log(mongoose.connection.client.s.url);
+
 app.use(
   session({
     secret: process.env.SECRET_KEY,
-    store: MongoStore.create({ client: mongoose.connection.getClient() }),
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create(mongoose.connection),
+    cookie: {
+      secure: process.env.NODE_ENV == 'production',
+    },
   }),
 );
 
 // serve static files from the React app directory
-app.use(express.static(path.join(__dirname, 'client/build')));
+app.use(express.static(path.join(__dirname, '/client/build')));
+app.use(express.static(path.join(__dirname, '/public')));
 
 //add routes
 app.use('/api', require('./routes/ads.routes'));
 app.use('/auth', require('./routes/auth.routes'));
 
-app.use(express.static(path.join(__dirname, '/client/build')));
-app.use(express.static(path.join(__dirname, '/public')));
-
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '/client/build/index.html'));
+  res.sendFile(path.join(__dirname + '/client/build/index.html'));
 });
 
 app.use((req, res) => {
