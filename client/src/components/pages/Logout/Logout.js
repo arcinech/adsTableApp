@@ -1,5 +1,5 @@
 import { API_URL } from '../../../config';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { logOut } from '../../../redux/reducers/usersRedux';
@@ -7,13 +7,19 @@ import axios from 'axios';
 
 const Logout = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   useEffect(() => {
-    axios.delete(`${API_URL}/auth/logout`, { credentials: 'include' }).then(res => {
-      console.log('logged out' + res);
-      dispatch(logOut());
-      <Navigate to='/' />;
-    });
-  }, [dispatch]);
+    (async () => {
+      await fetch(`${API_URL}/auth/logout`, {
+        method: 'DELETE',
+        credentials: 'include',
+      }).then(() => {
+        console.log('logged out');
+        dispatch(logOut());
+        navigate('/');
+      });
+    })();
+  }, [dispatch, navigate]);
 
   return null;
 };
