@@ -1,9 +1,9 @@
-import axios from 'axios';
 import { API_URL } from '../../config';
 
 export const getAds = ({ ads }) => ads.data;
 export const getRequest = ({ ads }) => ads.requests;
-
+export const getAdById = ({ ads }, id) => ads.data.filter(ad => ad.id === id);
+export const getSearchResult = ({ ads }) => ads.search;
 /* ACTIONS */
 
 // action name creator
@@ -36,8 +36,12 @@ export const loadAdsRequest = () => {
   return async dispatch => {
     dispatch(startRequest({ name: 'LOAD_ADS' }));
     try {
-      let res = await axios.get(`${API_URL}/api/ads`);
-      dispatch(loadAds(res.data));
+      const options = {
+        method: 'GET',
+      };
+      const res = await fetch(`${API_URL}/api/ads`, options);
+      const json = await res.json();
+      dispatch(loadAds(json));
       dispatch(endRequest({ name: 'LOAD_ADS' }));
     } catch (err) {
       dispatch(errorRequest({ name: 'LOAD_ADS', error: err.message }));
@@ -50,8 +54,15 @@ export const addAdsRequest = ad => {
     dispatch(startRequest({ name: 'ADD_AD' }));
 
     try {
-      let res = await axios.post(`${API_URL}/api/ads`, ad);
-      dispatch(loadAds(res));
+      console.log(...ad);
+      const options = {
+        method: 'POST',
+        body: ad,
+        credentials: 'include',
+      };
+      const res = await fetch(`${API_URL}/api/ads`, options);
+      const json = await res.json();
+      dispatch(addAd(json));
       dispatch(endRequest({ name: 'ADD_AD' }));
     } catch (err) {
       dispatch(errorRequest({ name: 'ADD_AD', error: err.message }));
@@ -64,8 +75,15 @@ export const editAdsRequest = (ad, id) => {
     dispatch(startRequest({ name: 'ADD_AD' }));
 
     try {
-      let res = await axios.put(`${API_URL}/api/ads/${id}`, ad);
-      dispatch(editAd(res));
+      const options = {
+        method: 'PUT',
+        body: ad,
+        credentials: 'include',
+      };
+
+      const res = await fetch(`${API_URL}/api/ads/${id}`, options);
+      const json = await res.json();
+      dispatch(editAd(json));
       dispatch(endRequest({ name: 'ADD_AD' }));
     } catch (err) {
       dispatch(errorRequest({ name: 'ADD_AD', error: err.message }));
@@ -77,8 +95,13 @@ export const deleteAdsRequest = id => {
   return async dispatch => {
     dispatch(startRequest({ name: 'ADD_AD' }));
     try {
-      let res = await axios.delete(`${API_URL}/api/ads/${id}`);
-      dispatch(deleteAd(res));
+      const options = {
+        method: 'DELETE',
+        credentials: 'include',
+      };
+      const res = await fetch.delete(`${API_URL}/api/ads/${id}`, options);
+      const json = res.json();
+      dispatch(deleteAd(json));
       dispatch(endRequest({ name: 'ADD_AD' }));
     } catch (err) {
       dispatch(errorRequest({ name: 'ADD_AD', error: err.message }));
@@ -86,12 +109,16 @@ export const deleteAdsRequest = id => {
   };
 };
 
-export const searchAdsRequest = searchPhrase => {
+export const searchAdsRequest = search => {
   return async dispatch => {
     dispatch(startRequest({ name: 'SEARCH_ADS' }));
     try {
-      let res = await axios.get(`${API_URL}/api/ads/search/${searchPhrase}`);
-      dispatch(searchAds(res.data));
+      const options = {
+        method: 'GET',
+      };
+      const res = await fetch(`${API_URL}/api/ads/search/${search}`, options);
+      const json = await res.json();
+      dispatch(searchAds(json));
       dispatch(endRequest({ name: 'SEARCH_ADS' }));
     } catch (err) {
       dispatch(errorRequest({ name: 'SEARCH_ADS', error: err.message }));
@@ -111,15 +138,15 @@ const initialState = {
 const adsReducer = (statePart = initialState, action) => {
   switch (action.type) {
     case LOAD_ADS:
-      return { ...statePart, ads: [...action.payload] };
+      return { ...statePart, data: [...action.payload] };
     case ADD_AD:
-      return { ...statePart, ads: [...statePart.ads, action.payload] };
+      return { ...statePart, data: [...statePart.ads, action.payload] };
     case EDIT_AD:
       return statePart.map(ad => (ad._id === action.payload.id ? action.payload : ad));
     case DELETE_AD:
       return statePart.filter(ad => ad._id !== action.payload.id);
     case SEARCH_ADS:
-      return { ...statePart, ads: [...action.payload] };
+      return { ...statePart, search: [...action.payload] };
     case START_REQUEST:
       return {
         ...statePart,
