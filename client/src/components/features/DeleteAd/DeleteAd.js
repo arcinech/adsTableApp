@@ -9,14 +9,14 @@ const DeleteAd = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    const deleteAction = async () => {
-      await dispatch(deleteAdsRequest(id));
+    const deleteAction = () => {
+      dispatch(deleteAdsRequest(id));
 
       navigate('/');
     };
     deleteAction();
   }, [dispatch, id, navigate]);
-  return <></>;
+  return null;
 };
 
 export default DeleteAd;
