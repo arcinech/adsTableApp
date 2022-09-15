@@ -69,7 +69,7 @@ exports.login = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-  req.session.destroy();
+  await req.session.destroy();
   res.status(200).send({ message: 'User logged out' });
 };
 

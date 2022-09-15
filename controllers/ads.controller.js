@@ -3,11 +3,13 @@ const User = require('../models/user.model');
 const escapeHTML = require('../utils/escapeHTML');
 const sanitize = require('mongo-sanitize');
 const cleanFile = require('../utils/cleanFiles');
+const getImageFileType = require('../utils/getImageFileType');
 
 exports.getAll = async (req, res) => {
+  console.log('start all');
   try {
-    const ads = await Ad.find()?.populate('user', '-password -__v');
-    res.status(200).json(ads);
+    const ads = await Ad.find().populate('user', '-password -__v');
+    res.status(200).send(ads);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -15,12 +17,9 @@ exports.getAll = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const ad = await Ad.findById(sanitize(req.params.id))?.populate(
-      'user',
-      '-password -_v',
-    );
+    const ad = await Ad.findById(sanitize(req.params.id));
 
-    res.status(200).json(ad);
+    res.status(200).send(ad);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -30,8 +29,7 @@ exports.postAd = async (req, res) => {
   try {
     const { title, description, price, location } = req.body;
     const fileType = req.file ? await getImageFileType(req.file) : 'unknown';
-
-    const userId = await User.findOne({ login: { $eq: req.session.login } })._id;
+    const userId = await User.findOne({ login: { $eq: req.session.login.login } });
     const ad = await Ad.findOne({
       title: sanitize(title),
       description: sanitize(description),
@@ -63,12 +61,13 @@ exports.postAd = async (req, res) => {
         description: escapeHTML(description),
         price: price,
         image: req.file.filename,
-        user: userId,
+        user: userId._id,
         createdAt: Date.now(),
         location: escapeHTML(location),
       });
+      console.log(newAd);
       await newAd.save();
-      return res.status(201).json(newAd);
+      return res.status(201).send(newAd);
     } else {
       cleanFile(req.file.filename);
       return res.status(400).json({ message: 'Invalid data' });
@@ -84,11 +83,11 @@ exports.putAd = async (req, res) => {
     const { title, description, price, location } = req.body;
     const fileType = req.file ? await getImageFileType(req.file) : 'unknown';
     const ad = await Ad.findById(sanitize(req.params.id));
-    const userId = await User.findOne({ login: { $eq: req.session.login } })._id;
+    const userId = await User.findOne({ login: { $eq: req.session.login } });
     if (!ad) {
       cleanFile(req.file);
       return res.status(404).json({ message: 'Ad not found' });
-    } else if (ad.login !== userId) {
+    } else if (ad.login !== userId.login) {
       cleanFile(req.file);
       return res.status(403).json({ message: 'You are not allowed to edit this ad' });
     } else if (
@@ -113,7 +112,7 @@ exports.putAd = async (req, res) => {
         ad.image = req.file.filename;
       }
       await ad.save();
-      return res.status(200).json(ad);
+      return res.status(200).send(ad);
     } else {
       cleanFile(req.file.filename);
       return res.status(400).json({ message: 'Invalid data' });
@@ -126,9 +125,11 @@ exports.putAd = async (req, res) => {
 
 exports.search = async (req, res) => {
   try {
-    const ads = await Ad.find({ title: { $regex: req.params.search, $options: 'i' } });
+    const ads = await Ad.find({
+      title: { $regex: req.params.searchPhrase, $options: 'i' },
+    });
     if (ads) {
-      res.status(200).json(ads);
+      res.status(200).send(ads);
     } else {
       res.status(404).json({ message: 'Ad not found' });
     }
