@@ -40,6 +40,9 @@ const NavBar = () => {
               Home
             </Nav.Link>
             {loginSelector(user)}
+            <Nav.Link as={Link} to='/search'>
+              Search
+            </Nav.Link>
           </Nav>
         </Container>
       </Navbar>
