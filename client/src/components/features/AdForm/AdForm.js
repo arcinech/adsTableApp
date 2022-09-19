@@ -1,18 +1,19 @@
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
+import Spinner from 'react-bootstrap/Spinner';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
-const AdForm = ({ action, actionText, ...props }) => {
+const AdForm = ({ action, actionText, requests, ...props }) => {
   const currentUser = useSelector(({ user }) => user);
   const [adData, setAdData] = useState({
     title: props.title ?? '',
     description: props.description ?? '',
-    image: props.image ?? null,
+    image: null,
     price: props.price ?? '',
     location: props.location ?? '',
-    user: props.login ?? currentUser ? currentUser.login : '',
+    user: props.user ?? currentUser ? currentUser.id : undefined,
     createdAt: props.cretedAt ?? undefined,
   });
 
@@ -37,19 +38,26 @@ const AdForm = ({ action, actionText, ...props }) => {
     ]) {
       formData.append(key, adData[key]);
     }
-    console.log(...formData);
-
-    formData.append('image', adData.image);
-    console.log(formData);
+    if (adData.image !== null) {
+      formData.append('image', adData.image);
+    }
     action(formData);
   };
 
-  if (!currentUser || currentUser.login !== adData.user) {
+  if (!currentUser) {
+    return (
+      <Alert variant='warning'>To access this page, you need to be logged in!</Alert>
+    );
+  } else if (adData.user !== currentUser.id) {
     return (
       <Alert variant='warning'>
-        To access this page, please register, login or be an author of this ad!
+        To access this page, you need to be logged author of this ad!
       </Alert>
     );
+  } else if (requests.pending === true) {
+    return <Spinner />;
+  } else if (requests.error === true) {
+    return <Alert variant='danger'>{requests.error}</Alert>;
   } else {
     return (
       <>

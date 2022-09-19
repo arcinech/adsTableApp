@@ -1,23 +1,23 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdForm from '../AdForm/AdForm';
-import { editAdsRequest } from '../../../redux/reducers/adsRedux';
-
+import { editAdsRequest, getRequest, EDIT_AD } from '../../../redux/reducers/adsRedux';
 const EditAd = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
   const ad = useSelector(({ ads }) => ads.data.find(ad => ad._id === id));
+  const requests = useSelector(state => getRequest(state, EDIT_AD));
 
-  const handleSubmit = async ads => {
-    await dispatch(editAdsRequest(ads, id));
+  const handleSubmit = ad => {
+    dispatch(editAdsRequest(ad, id));
 
     navigate('/');
   };
 
   return (
     <>
-      <AdForm action={handleSubmit} {...ad} actionText='Edit Ad' />
+      <AdForm action={handleSubmit} requests={requests} {...ad} actionText='Edit Ad' />
     </>
   );
 };
