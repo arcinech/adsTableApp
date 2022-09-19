@@ -12,27 +12,37 @@ import Header from './components/views/Header/Header';
 import Footer from './components/views/Footer/Footer';
 import SingleAd from './components/pages/SingleAd/SingleAd';
 import AddAd from './components/features/AdAdd/AdAdd';
-import axios from 'axios';
+import EditAd from './components/features/EditAd/EditAd';
+import DeleteAd from './components/features/DeleteAd/DeleteAd';
+import NotFound from './components/pages/NotFound/NotFound';
+import Search from './components/pages/Search/Search';
+import SearchResult from './components/features/SearchResult/SearchResult';
 
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    // const option = {
-    //   method: 'GET',
-    //   header: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   credentials: 'include',
-    // };
-
-    axios.get(`${API_URL}/auth/getUser`, { withCredentials: true }).then(res => {
-      if (res.status === 200) {
-        console.log(res);
-        dispatch(logIn(res.data));
-      } else {
-        console.log(res);
+    const fetchUser = async () => {
+      try {
+        const option = {
+          method: 'GET',
+          header: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        };
+        const res = await fetch(`${API_URL}/auth/getUser`, option);
+        const json = await res.json();
+        if (res.status === 200) {
+          dispatch(logIn(json));
+        } else {
+          console.log(json.message);
+        }
+      } catch (err) {
+        console.log(err);
       }
-    });
+    };
+
+    fetchUser();
   }, [dispatch]);
 
   return (
@@ -43,13 +53,14 @@ const App = () => {
           <Route path='/' element={<Home />} />
           <Route path='/ads/:id' element={<SingleAd />} />
           <Route path='/ads/add' element={<AddAd />} />
-          {/* <Route path='/ads/edit/:id' element={<AdEdit />} /> */}
-          {/* <Route path='/ads/remove/:id' element={<AdRemove />} /> */}
-          {/* <Route path='/search/:searchPhrase' element={<Search />} /> */}
+          <Route path='/ads/edit/:id' element={<EditAd />} />
+          <Route path='/ads/delete/:id' element={<DeleteAd />} />
+          <Route path='/search' element={<Search />} />
+          <Route path='/search/:searchPhrase' element={<SearchResult />} />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/logout' element={<Logout />} />
-          {/* <Route path='/*' element={<NotFound />} /> */}
+          <Route path='/*' element={<NotFound />} />
         </Routes>
         <Footer />
       </Container>
