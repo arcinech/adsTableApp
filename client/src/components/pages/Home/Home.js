@@ -4,27 +4,34 @@ import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import { useEffect } from 'react';
-import { getRequest, getAds } from '../../../redux/reducers/adsRedux';
-import { loadAdsRequest } from '../../../redux/reducers/adsRedux';
+import {
+  getRequest,
+  getAds,
+  LOAD_ADS,
+  loadAdsRequest,
+} from '../../../redux/reducers/adsRedux';
 import { NavLink } from 'react-router-dom';
 import styles from './Home.module.scss';
 
 const Home = () => {
   const dispatch = useDispatch();
-  const request = useSelector(state => getRequest(state)).LOAD_ADS;
+  const request = useSelector(state => getRequest(state, LOAD_ADS));
   const ads = useSelector(getAds);
 
   useEffect(() => {
     dispatch(loadAdsRequest());
   }, [dispatch]);
 
-  if (request?.pending) {
+  console.log(request);
+
+  if (!request || !request.success) {
     console.log('spinner');
     return <Spinner />;
-  } else if (request?.error) {
+  } else if (request.error === true) {
     console.log('alert');
     return <Alert color='warning'>{request.error}</Alert>;
   } else {
+    console.log('sucess?');
     return (
       <section className={styles.root}>
         <div className={styles.titleBar}>
