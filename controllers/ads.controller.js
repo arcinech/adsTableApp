@@ -35,6 +35,7 @@ exports.postAd = async (req, res) => {
       description: sanitize(description),
       price: price,
     });
+    console.log(req.file);
 
     if (ad) {
       cleanFile(req.file.filename);
@@ -73,7 +74,9 @@ exports.postAd = async (req, res) => {
       return res.status(400).json({ message: 'Invalid data' });
     }
   } catch (err) {
-    cleanFile(req.file.filename);
+    if (req.file) {
+      cleanFile(req.file.filename);
+    }
     res.status(500).json({ message: err.message });
   }
 };
@@ -83,11 +86,11 @@ exports.putAd = async (req, res) => {
     const { title, description, price, location } = req.body;
     const fileType = req.file ? await getImageFileType(req.file) : 'unknown';
     const ad = await Ad.findById(sanitize(req.params.id));
-    const userId = await User.findOne({ login: { $eq: req.session.login } });
+    const userId = await User.findOne({ login: { $eq: req.session.login.login } });
     if (!ad) {
       cleanFile(req.file);
       return res.status(404).json({ message: 'Ad not found' });
-    } else if (ad.login !== userId.login) {
+    } else if (userId._id && ad.user !== userId._id?.toString()) {
       cleanFile(req.file);
       return res.status(403).json({ message: 'You are not allowed to edit this ad' });
     } else if (
@@ -118,7 +121,9 @@ exports.putAd = async (req, res) => {
       return res.status(400).json({ message: 'Invalid data' });
     }
   } catch (err) {
-    cleanFile(req.file.filename);
+    if (req.file) {
+      cleanFile(req.file.filename);
+    }
     res.status(500).json({ message: err.message });
   }
 };
@@ -141,11 +146,11 @@ exports.search = async (req, res) => {
 exports.deleteAd = async (req, res) => {
   try {
     const ad = await Ad.findById(sanitize(req.params.id));
-    const userId = await User.findOne({ login: { $eq: req.session.login } })._id;
+    const userId = await User.findOne({ login: { $eq: req.session.login.login } });
     if (!ad) {
       return res.status(404).json({ message: 'Ad not found' });
-    } else if (ad.login !== userId) {
-      return res.status(403).json({ message: 'You are not allowed to edit this ad' });
+    } else if (userId._id && ad.user !== userId._id?.toString()) {
+      return res.status(403).json({ message: 'You are not allowed to delete this ad' });
     } else {
       await cleanFile(ad.image);
       await ad.remove();
