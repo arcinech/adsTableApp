@@ -1,20 +1,13 @@
-require('dotenv').config();
+require('dotenv').config({ silent: true });
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const connectToDB = require('./db');
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
-const mongoose = require('mongoose');
-
+const connectToDBandSession = require('./db');
 //start express server
 const app = express();
-app.listen(process.env.PORT || 8000, () => {
-  console.log('Server is running...');
-});
 
-// connectToDB
-connectToDB();
+// connectToDB and session middleware
+connectToDBandSession();
 
 // add middleware
 if (process.env.NODE_ENV !== 'production') {
@@ -25,20 +18,21 @@ if (process.env.NODE_ENV !== 'production') {
     }),
   );
 }
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(
-  session({
-    secret: process.env.SECRET_KEY,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create(mongoose.connection),
-    cookie: {
-      secure: process.env.NODE_ENV == 'production',
-    },
-  }),
-);
+// app.use(
+//   session({
+//     secret: process.env.SECRET_KEY,
+//     resave: false,
+//     saveUninitialized: false,
+//     store: null,
+//     cookie: {
+//       secure: process.env.NODE_ENV == 'production',
+//     },
+//   }),
+// );
 
 // serve static files from the React app directory
 app.use(express.static(path.join(__dirname, '/client/build')));
@@ -54,4 +48,8 @@ app.get('*', (req, res) => {
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Not found...' });
+});
+
+app.listen(process.env.PORT || 8000, () => {
+  console.log('Server is running...');
 });
