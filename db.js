@@ -54,4 +54,4 @@ connectToDBandSession = async () => {
   }
 };
 
-module.exports = connectToDB;
+module.exports = connectToDBandSession;
