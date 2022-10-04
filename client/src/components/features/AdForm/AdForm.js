@@ -5,7 +5,6 @@ import Spinner from 'react-bootstrap/Spinner';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { request } from 'express';
 
 const AdForm = ({ action, actionText, requests, ...props }) => {
   const currentUser = useSelector(({ user }) => user);
@@ -62,7 +61,7 @@ const AdForm = ({ action, actionText, requests, ...props }) => {
         To access this page, you need to be logged author of this ad!
       </Alert>
     );
-  } else if (!request.pending) {
+  } else if (!requests) {
     return (
       <>
         <Form onSubmit={validate(handleSubmit)}>
@@ -153,7 +152,7 @@ const AdForm = ({ action, actionText, requests, ...props }) => {
         </Form>
       </>
     );
-  } else if (request.pending === true) {
+  } else if (requests.pending === true) {
     <Spinner />;
   } else {
     <Alert variant='warning'>Somthing went wrong</Alert>;
