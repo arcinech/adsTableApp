@@ -22,10 +22,11 @@ const DeleteAd = () => {
     };
     deleteAction();
   }, [dispatch, id, navigate]);
-  if (requests.pending === true) {
-    return <Spinner />;
-  } else if (requests.pending === false && requests.success === true) {
+
+  if (!requests) {
     return null;
+  } else if (requests.pending === true) {
+    return <Spinner />;
   } else {
     return <Alert variant='danger'>Error! {requests.error}</Alert>;
   }

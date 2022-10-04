@@ -22,16 +22,11 @@ const Home = () => {
     dispatch(loadAdsRequest());
   }, [dispatch]);
 
-  console.log(request);
-
   if (!request || !request.success) {
-    console.log('spinner');
     return <Spinner />;
   } else if (request.error === true) {
-    console.log('alert');
     return <Alert color='warning'>{request.error}</Alert>;
   } else {
-    console.log('sucess?');
     return (
       <section className={styles.root}>
         <div className={styles.titleBar}>

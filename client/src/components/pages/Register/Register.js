@@ -22,7 +22,7 @@ const Register = () => {
     fd.append('avatar', avatar);
 
     const options = {
-      method: 'POST', //
+      method: 'POST',
       body: fd,
     };
     setStatus('loading');

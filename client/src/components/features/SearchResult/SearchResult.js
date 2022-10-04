@@ -14,7 +14,9 @@ const SearchResult = () => {
 
   const ads = useSelector(getSearchResult);
   const requests = useSelector(state => getRequest(state, SEARCH_ADS));
-  if (
+  if (!requests || requests.pending === true) {
+    return <Spinner />;
+  } else if (
     requests.pending === false &&
     requests.success === true &&
     (!ads || ads.length === 0)
@@ -24,8 +26,6 @@ const SearchResult = () => {
         <h2>Sorry, no results found</h2>
       </div>
     );
-  } else if (!requests || requests.pending === true) {
-    return <Spinner />;
   } else if (requests.error) {
     return <Alert variant='danger'>Error! {requests.error}</Alert>;
   } else {
