@@ -2,7 +2,7 @@ require('dotenv').config({ silent: true });
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const connectToDBandSession = require('./db');
+const { connectToDBandSession, middleware } = require('./db');
 //start express server
 const app = express();
 
@@ -21,18 +21,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-// app.use(
-//   session({
-//     secret: process.env.SECRET_KEY,
-//     resave: false,
-//     saveUninitialized: false,
-//     store: null,
-//     cookie: {
-//       secure: process.env.NODE_ENV == 'production',
-//     },
-//   }),
-// );
+app.use(middleware);
 
 // serve static files from the React app directory
 app.use(express.static(path.join(__dirname, '/client/build')));

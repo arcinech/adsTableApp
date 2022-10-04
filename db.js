@@ -3,10 +3,11 @@ const mongoose = require('mongoose');
 const express = require('express');
 const MongoStore = require('connect-mongo');
 const session = require('express-session');
+const app = express();
 
-connectToDBandSession = async () => {
+const middleware = app;
+const connectToDBandSession = async () => {
   try {
-    const app = express();
     const NODE_ENV = process.env.NODE_ENV;
     if (NODE_ENV === 'production') {
       dbUri = process.env.MONGODB_URI;
@@ -38,7 +39,7 @@ connectToDBandSession = async () => {
     db.on('error', err => console.log('Error ' + err));
 
     //middleware for session
-    app.use(
+    middleware.use(
       session({
         secret: process.env.SECRET_KEY,
         resave: false,
@@ -54,4 +55,7 @@ connectToDBandSession = async () => {
   }
 };
 
-module.exports = connectToDBandSession;
+module.exports = {
+  connectToDBandSession: connectToDBandSession,
+  middleware: middleware,
+};
