@@ -1,5 +1,4 @@
 const authMiddleware = async (req, res, next) => {
-  console.log(req.session.login);
   if (req.session.login) {
     next();
   } else {

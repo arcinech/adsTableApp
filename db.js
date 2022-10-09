@@ -2,11 +2,8 @@ require('dotenv').config({ silent: true });
 const mongoose = require('mongoose');
 const express = require('express');
 const MongoStore = require('connect-mongo');
-const session = require('express-session');
-const app = express();
 
-const middleware = app;
-const connectToDBandSession = async () => {
+const connectToDB = async () => {
   try {
     const NODE_ENV = process.env.NODE_ENV;
     if (NODE_ENV === 'production') {
@@ -14,10 +11,10 @@ const connectToDBandSession = async () => {
     } else if (NODE_ENV === 'test') {
       dbUri = 'mongodb://localhost:27017/AdsTableTest';
     } else {
-      dbUri = 'mongodb://localhost:27017/AdsTable';
+      dbUri = process.env.MONGODB_URI;
     }
     // connect to DB
-    await mongoose.connect(dbUri, {
+    mongoose.connect(dbUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
@@ -25,7 +22,7 @@ const connectToDBandSession = async () => {
     const db = mongoose.connection;
 
     // on success
-    db.once('open', () => {
+    await db.once('open', () => {
       if (NODE_ENV === 'production') {
         console.log('Connected to MongoDB');
       } else if (NODE_ENV === 'test') {
@@ -38,24 +35,12 @@ const connectToDBandSession = async () => {
     // on error
     db.on('error', err => console.log('Error ' + err));
 
-    //middleware for session
-    middleware.use(
-      session({
-        secret: process.env.SECRET_KEY,
-        resave: false,
-        saveUninitialized: false,
-        store: MongoStore.create(mongoose.connection),
-        cookie: {
-          secure: process.env.NODE_ENV == 'production',
-        },
-      }),
-    );
+    exports.sessionStorage = MongoStore.create({
+      client: mongoose.connection.getClient(),
+    });
   } catch (err) {
     console.log(err);
   }
 };
 
-module.exports = {
-  connectToDBandSession: connectToDBandSession,
-  middleware: middleware,
-};
+module.exports = connectToDB;

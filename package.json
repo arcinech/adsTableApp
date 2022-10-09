@@ -4,7 +4,7 @@
   "description": "App for ads",
   "main": "index.js",
   "scripts": {
-    "build": "cd client && yarn install && yarn build",
+    "build": "yarn install && cd client && yarn install && yarn build",
     "start": "node server.js",
     "start:server": "nodemon server.js",
     "start:client": "cd ./client && yarn run start",
@@ -14,7 +14,6 @@
   "license": "ISC",
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.5",
-    "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "connect-mongo": "^4.6.0",
     "cors": "^2.8.5",
