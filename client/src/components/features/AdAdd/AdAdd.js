@@ -11,7 +11,6 @@ const AddAd = () => {
 
   const handleSubmit = async ads => {
     await dispatch(addAdsRequest(ads));
-
     navigate('/');
   };
   return (

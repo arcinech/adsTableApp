@@ -31,8 +31,6 @@ const AdForm = ({ action, actionText, requests, ...props }) => {
   };
 
   const handleSubmit = e => {
-    e.preventDefault();
-
     const formData = new FormData();
 
     for (let key of [
