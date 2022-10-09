@@ -35,7 +35,7 @@ const AdCard = ({
             Read more
           </Button>
         )}
-        {loggedUser?.login === user.login && params.id === _id && (
+        {loggedUser?.login === user?.login && params.id === _id && (
           <>
             <Button
               className='me-1'
