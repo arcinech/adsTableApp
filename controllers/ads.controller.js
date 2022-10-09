@@ -6,7 +6,6 @@ const cleanFile = require('../utils/cleanFiles');
 const getImageFileType = require('../utils/getImageFileType');
 
 exports.getAll = async (req, res) => {
-  console.log('start all');
   try {
     const ads = await Ad.find().populate('user', '-password -__v');
     res.status(200).send(ads);
@@ -35,7 +34,6 @@ exports.postAd = async (req, res) => {
       description: sanitize(description),
       price: price,
     });
-    console.log(req.file);
 
     if (ad) {
       cleanFile(req.file.filename);
@@ -66,7 +64,6 @@ exports.postAd = async (req, res) => {
         createdAt: Date.now(),
         location: escapeHTML(location),
       });
-      console.log(newAd);
       await newAd.save();
       return res.status(201).send(newAd);
     } else {

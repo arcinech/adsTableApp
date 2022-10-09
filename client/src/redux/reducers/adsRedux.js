@@ -116,7 +116,7 @@ export const searchAdsRequest = search => {
       const options = {
         method: 'GET',
       };
-      console.log(search);
+
       const res = await fetch(`${API_URL}/api/ads/search/${search}`, options);
       const json = await res.json();
       dispatch(searchAds(json));
