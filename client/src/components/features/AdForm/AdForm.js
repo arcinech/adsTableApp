@@ -5,6 +5,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
 const AdForm = ({ action, actionText, requests, ...props }) => {
   const currentUser = useSelector(({ user }) => user);
@@ -18,6 +19,8 @@ const AdForm = ({ action, actionText, requests, ...props }) => {
     createdAt: props.cretedAt ?? undefined,
   });
 
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit: validate,
@@ -30,7 +33,7 @@ const AdForm = ({ action, actionText, requests, ...props }) => {
     setAdData({ ...adData, [name]: value });
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = () => {
     const formData = new FormData();
 
     for (let key of [
@@ -47,6 +50,7 @@ const AdForm = ({ action, actionText, requests, ...props }) => {
       formData.append('image', adData.image);
     }
     action(formData);
+    navigate('/');
   };
 
   if (!currentUser) {
@@ -59,7 +63,7 @@ const AdForm = ({ action, actionText, requests, ...props }) => {
         To access this page, you need to be logged author of this ad!
       </Alert>
     );
-  } else if (!requests) {
+  } else if (!requests || (requests && requests.pending === false && !requests.error)) {
     return (
       <>
         <Form onSubmit={validate(handleSubmit)}>

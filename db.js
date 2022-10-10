@@ -11,7 +11,7 @@ const connectToDB = async () => {
     } else if (NODE_ENV === 'test') {
       dbUri = 'mongodb://localhost:27017/AdsTableTest';
     } else {
-      dbUri = process.env.MONGODB_URI;
+      dbUri = 'mongodb://localhost:27017/AdsTable';
     }
     // connect to DB
     mongoose.connect(dbUri, {
