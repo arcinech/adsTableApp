@@ -58,9 +58,8 @@ exports.login = async (req, res) => {
       if (!isPasswordCorrect) {
         return res.status(400).send({ message: 'Login or password is not correct' });
       }
-
-      res.status(200).send({ message: 'User logged in ' + user.login });
-      return (req.session.login = user.login);
+      req.session.login = { login: user.login, id: user._id };
+      return res.status(200).send({ message: 'User logged in ' + user.login });
     } else {
       return res.status(400).send({ message: 'Bad request' });
     }
@@ -69,7 +68,11 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.logout = (req, res) => {
-  req.session.destroy();
+exports.logout = async (req, res) => {
+  await req.session.destroy();
   res.status(200).send({ message: 'User logged out' });
+};
+
+exports.getUser = async (req, res) => {
+  res.status(200).send(req.session.login);
 };

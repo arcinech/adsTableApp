@@ -1,5 +1,5 @@
 const fs = require('fs');
-let path = require('path');
+const path = require('path');
 
 const cleanFile = async filename => {
   try {
