@@ -15,6 +15,6 @@ Online demo can be found under:
 
 [Heroku deployment](https://desolate-shelf-98790.herokuapp.com/)
 
-[Replit deployment](https://replit.com/@arcinech/adsTableApp)
+[Replit deployment](https://adsTableApp.arcinech.repl.co)
 
 Heroku demo will be available till 28.11.2022.
