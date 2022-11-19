@@ -12,6 +12,9 @@ This app use routes '/auth' for user actions
 and '/api/ads' for ads api.
 
 Online demo can be found under:
-https://desolate-shelf-98790.herokuapp.com/
 
-This demo will be available till 28.11.2022.
+[Heroku deployment](https://desolate-shelf-98790.herokuapp.com/)
+
+[Replit deployment](https://replit.com/@arcinech/adsTableApp)
+
+Heroku demo will be available till 28.11.2022.
